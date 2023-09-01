@@ -29,6 +29,8 @@
  * 
  * sums
  * [[1 + 7], [1 + 5 + 3], [1 + 3]]
+ * [[8], [9], [4]]
+ * [[4], [8], [9]]
  * 
  * Data Structure
  * 
@@ -44,17 +46,21 @@
 
 let arr = [[1, 6, 7], [1, 5, 3], [1, 8, 3]];
 
-// let result = arr.sort((subArrA, subArrB) => {
-//   let sumA = subArrA.filter(num => num % 2 !== 0).reduce((acc, curr) => acc + curr, 0 );
-//   let sumB = subArrB.filter(num => num % 2 !== 0).reduce((acc, curr) => acc + curr, 0 );
-//   return sumA - sumB;
-// });
+// The solution to my problem was that you cannot assign the return value of calling the sort method
+// to a variable.
+arr.sort((subArrA, subArrB) => {
+  let sumA = subArrA.filter(num => num % 2 !== 0).reduce((acc, curr) => acc + curr, 0 );
+  let sumB = subArrB.filter(num => num % 2 !== 0).reduce((acc, curr) => acc + curr, 0 );
+  return sumA - sumB;
+});
 
-let result = arr.map(subArr => {
-  // Collect all odd numbers within each sub array
-  // Use remainder operator to find odd numbers
-  return subArr.filter(num => num % 2 !== 0).reduce((acc, curr) => acc + curr, 0 );
-}).sort((a, b) => a - b);
+// let result = arr.map(subArr => {
+//   // Collect all odd numbers within each sub array
+//   // Use remainder operator to find odd numbers
+//   return subArr.filter(num => num % 2 !== 0).reduce((acc, curr) => acc + curr, 0 );
+// }).sort((a, b) => a - b);
+// // The problem with this is that once we use the reduce method, we cannot sort and
+// // expect to return the original array. 
 
 console.log(arr);
-console.log(result);
+// console.log(result);
