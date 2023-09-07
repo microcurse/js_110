@@ -41,6 +41,17 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER)
 }
 
+/**
+ * PEDAC
+ * Write a function that returns a comma delimited string along with either 'or' or 'and' to delimit
+ * the last two numbers in the string.
+ * 
+ * 
+ */
+function joinOr(squares) {
+
+}
+
 function playerChoosesSquare(board) {
   let square; 
 
