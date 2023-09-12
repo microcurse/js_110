@@ -41,22 +41,25 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER)
 }
 
-/**
- * PEDAC
- * Write a function that returns a comma delimited string along with either 'or' or 'and' to delimit
- * the last two numbers in the string.
- * 
- * 
- */
-function joinOr(squares) {
+function joinOr(squares, delimiter = ', ', lastDelimiter = 'or') {
+  let result = '';
+  if (squares.length >= 3) {
+    let lastElement = squares.pop();
+    result = squares.join(delimiter).concat(', ' + lastDelimiter  + ' ', lastElement);
+  } else if (squares.length === 2) {
+    result = squares.join(' ' + delimiter + ' ');
+  } else {
+    return squares.join('');
+  }
 
+  return result;
 }
 
 function playerChoosesSquare(board) {
   let square; 
 
   while (true) {
-    prompt(`Choose a square (${emptySquares(board).join(', ')}):`);
+    prompt(`Choose a square (${joinOr(emptySquares(board), ', ')}):`);
     square = readline.question().trim();
     if (emptySquares(board).includes(square)) break;
 
