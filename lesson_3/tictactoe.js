@@ -3,6 +3,15 @@ const INITIAL_MARKER = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const NUMBER_OF_WINS = 2;
+const WINNING_LINES = [ ['1', '2', '3'],
+                        ['1', '5', '9'],
+                        ['1', '4', '7'],
+                        ['2', '5', '8'],
+                        ['3', '5', '7'],
+                        ['3', '6', '9'],
+                        ['4', '5', '6'],
+                        ['7', '8', '9'],
+                      ];
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
@@ -111,16 +120,6 @@ function someoneWon(board) {
 }
 
 function detectWinner(board) {
-  const WINNING_LINES = [ ['1', '2', '3'],
-                          ['1', '5', '9'],
-                          ['1', '4', '7'],
-                          ['2', '5', '8'],
-                          ['3', '5', '7'],
-                          ['3', '6', '9'],
-                          ['4', '5', '6'],
-                          ['7', '8', '9'],
-                        ];
-
   for (let line = 0; line < WINNING_LINES.length; line++) {
     let [ sq1, sq2, sq3 ] = WINNING_LINES[line];
 
