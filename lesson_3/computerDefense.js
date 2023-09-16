@@ -59,9 +59,12 @@
  * There is an immediate threat on square 3, however since computerDefense only sees '0' and '6'
  * It returns null and a random square is selected
  * 
- * Possible solutions?
- * - Collect all board properties with values containing HUMAN_MARKER
- * - If it contains HUMAN_MARKER, create a sub array.
+ * Alternative solution algorithm
+ * - Collect all board properties with values containing HUMAN_MARKER and store that into an array
+ * - What needs to be done to the sub array in order to identify it as a potential win?
+ *  - Iterate over each WINNING_LINE
+ *    - if that line includes 2 out of the 3 board square indexes containing HUMAN_MARKERs then return
+ *      the 3rd board square index.
  * 
  * Code
  * 
@@ -93,19 +96,30 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER)
 }
 
-function computerDefense(board) {
-  for (let line = 0; line < WINNING_LINES.length; line++) {
-    let [ sq1, sq2, sq3 ] = WINNING_LINES[line];
+// function computerDefense(board) {
+//   for (let line = 0; line < WINNING_LINES.length; line++) {
+//     let [ sq1, sq2, sq3 ] = WINNING_LINES[line];
 
-    if (
-      board[sq1] === HUMAN_MARKER &&
-      board[sq2] === HUMAN_MARKER
-    ) {
-      return sq3;
+//     if (
+//       board[sq1] === HUMAN_MARKER &&
+//       board[sq2] === HUMAN_MARKER
+//     ) {
+//       return sq3;
+//     }
+//   }
+
+//   return null;
+// }
+
+function computerDefense(board) {
+  let result = [];
+  for (const [key, value] of Object.entries(board)) {
+    if (value === 'X') {
+      result.push(key);
     }
   }
-
-  return null;
+  
+  return result;
 }
 
 function detectWinner(board) {
@@ -142,5 +156,5 @@ function computerChoosesSquare(board) {
   }
 }
 
-console.log(computerChoosesSquare(board));
+console.log(computerDefense(board));
 console.log(board);
