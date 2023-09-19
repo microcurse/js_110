@@ -66,6 +66,17 @@
  *    - if that line includes 2 out of the 3 board square indexes containing HUMAN_MARKERs then return
  *      the 3rd board square index.
  * 
+ * Algorithm based on advice from Kwang
+ * Get a count of how many of the board positions in a given WINNING_LINE are occuped by the human,
+ * and how many are empty. This should disregard the position that it's in (first, second, third).
+ * If 2 of the markers are human and one is empty, use occupy that space.
+ * 
+ * - Iterate through each WINNING_LINE sub array
+ *  - If there are two human markers in the sub array and an empty space
+ *    - Occupy that empty space
+ * 
+ * 
+ * 
  * Code
  * 
  */
@@ -81,11 +92,11 @@ const COMPUTER_MARKER = 'O';
 
 let board = {
   1: 'O',
-  2: ' ',
+  2: 'X',
   3: ' ',
   4: ' ',
-  5: ' ',
-  6: 'X',
+  5: 'X',
+  6: ' ',
   7: ' ',
   8: ' ',
   9: 'X',
@@ -96,30 +107,37 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER)
 }
 
-// function computerDefense(board) {
-//   for (let line = 0; line < WINNING_LINES.length; line++) {
-//     let [ sq1, sq2, sq3 ] = WINNING_LINES[line];
+function detectThreat(board) {
+  let line = [];
+  // Get a count of how many of the board positions in a given WINNING_LINE are occuped by the human,
+  // and how many are empty.
 
-//     if (
-//       board[sq1] === HUMAN_MARKER &&
-//       board[sq2] === HUMAN_MARKER
-//     ) {
-//       return sq3;
-//     }
-//   }
+  // [3, 6, 9] -> 2 positions are occupied by a HUMAN_MARKER
+  // Iterate through each WINNING_LINE sub array.
+  let currentThreats = WINNING_LINES.filter(subArr => {
+    let count = 0;
 
-//   return null;
-// }
+    for (let i = 0; i <= subArr.length; i++) {
+      if (board[subArr[i]] === 'X') count += 1;
+    }
+
+    if (count === 2) {
+      return subArr;
+    }
+  });
+  
+  // Count how many HUMAN_MARKERS are in each sub array
+  // console.log(line);
+
+  // Get each WINNING_LINE and check how many elements are occupied by the human
+
+  return currentThreats;
+}
 
 function computerDefense(board) {
-  let result = [];
-  for (const [key, value] of Object.entries(board)) {
-    if (value === 'X') {
-      result.push(key);
-    }
-  }
-  
-  return result;
+  // Detect a threat
+  // Block the threat
+  // If no threat, use random
 }
 
 function detectWinner(board) {
@@ -156,5 +174,6 @@ function computerChoosesSquare(board) {
   }
 }
 
-console.log(computerDefense(board));
-console.log(board);
+// computerDefense(board);
+console.log(detectThreat(board));
+// console.log(board);
