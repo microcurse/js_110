@@ -94,9 +94,9 @@ let board = {
   1: 'O',
   2: 'X',
   3: ' ',
-  4: ' ',
-  5: 'X',
-  6: ' ',
+  4: 'O',
+  5: ' ',
+  6: 'X',
   7: ' ',
   8: ' ',
   9: 'X',
@@ -108,36 +108,42 @@ function emptySquares(board) {
 }
 
 function detectThreat(board) {
-  let line = [];
-  // Get a count of how many of the board positions in a given WINNING_LINE are occuped by the human,
-  // and how many are empty.
-
-  // [3, 6, 9] -> 2 positions are occupied by a HUMAN_MARKER
-  // Iterate through each WINNING_LINE sub array.
-  let currentThreats = WINNING_LINES.filter(subArr => {
+  let emptySquare = 0;
+  let potentialThreat = WINNING_LINES.filter(subArr => {
     let count = 0;
 
     for (let i = 0; i <= subArr.length; i++) {
       if (board[subArr[i]] === 'X') count += 1;
     }
+    
+    if (count === 2) return subArr;
+  });
 
-    if (count === 2) {
-      return subArr;
+  let immediateThreat = potentialThreat.filter(subArr => {
+    for (let i = 0; i <= subArr.length; i++) {
+      if (board[subArr[i]] === ' ') {
+        emptySquare = subArr[i];
+        return subArr
+      };
     }
   });
-  
-  // Count how many HUMAN_MARKERS are in each sub array
-  // console.log(line);
 
-  // Get each WINNING_LINE and check how many elements are occupied by the human
-
-  return currentThreats;
+  return emptySquare;
 }
 
 function computerDefense(board) {
-  // Detect a threat
-  // Block the threat
-  // If no threat, use random
+  // This takes the immediate threat lines and selects the empty board space to block said threat
+  // Find out which board space is empty and place a COMPUTER_MARKER there
+  // for (const [key, value] of Object.entries(board)) {
+
+  // }
+
+  for (let i = 0; i <= detectThreat(board).length; i++) {
+    if (detectThreat(board)[i] === ' ') {
+      return detectThreat(board)[i];
+    }
+  }
+
 }
 
 function detectWinner(board) {
@@ -165,10 +171,11 @@ function detectWinner(board) {
 function computerChoosesSquare(board) {
   let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
 
-  if (computerDefense(board) !== null) {
-    let square = computerDefense(board);
-    board[square] = COMPUTER_MARKER;
+  // Detect any threats and use defensive moves
+  if (detectThreat(board) > 0) {
+    board[detectThreat(board)] = COMPUTER_MARKER;
   } else {
+    // If there are no threats, occupy random board space
     let square = emptySquares(board)[randomIndex];
     board[square] = COMPUTER_MARKER;
   }
