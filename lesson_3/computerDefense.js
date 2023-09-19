@@ -131,21 +131,6 @@ function detectThreat(board) {
   return emptySquare;
 }
 
-function computerDefense(board) {
-  // This takes the immediate threat lines and selects the empty board space to block said threat
-  // Find out which board space is empty and place a COMPUTER_MARKER there
-  // for (const [key, value] of Object.entries(board)) {
-
-  // }
-
-  for (let i = 0; i <= detectThreat(board).length; i++) {
-    if (detectThreat(board)[i] === ' ') {
-      return detectThreat(board)[i];
-    }
-  }
-
-}
-
 function detectWinner(board) {
   for (let line = 0; line < WINNING_LINES.length; line++) {
     let [ sq1, sq2, sq3 ] = WINNING_LINES[line];
@@ -171,11 +156,9 @@ function detectWinner(board) {
 function computerChoosesSquare(board) {
   let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
 
-  // Detect any threats and use defensive moves
   if (detectThreat(board) > 0) {
     board[detectThreat(board)] = COMPUTER_MARKER;
   } else {
-    // If there are no threats, occupy random board space
     let square = emptySquares(board)[randomIndex];
     board[square] = COMPUTER_MARKER;
   }
