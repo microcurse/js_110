@@ -104,11 +104,40 @@ function playerChoosesSquare(board) {
   board[square] = HUMAN_MARKER;
 }
 
+function detectThreat(board) {
+  let emptySquare = 0;
+  let potentialThreat = WINNING_LINES.filter(subArr => {
+    let count = 0;
+
+    for (let i = 0; i <= subArr.length; i++) {
+      if (board[subArr[i]] === 'X') count += 1;
+    }
+    
+    if (count === 2) return subArr;
+  });
+
+  let immediateThreat = potentialThreat.filter(subArr => {
+    for (let i = 0; i <= subArr.length; i++) {
+      if (board[subArr[i]] === ' ') {
+        emptySquare = subArr[i];
+        return subArr
+      };
+    }
+  });
+
+  return emptySquare;
+}
+
 function computerChoosesSquare(board) {
   let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
 
-  let square = emptySquares(board)[randomIndex];
-  board[square] = COMPUTER_MARKER;
+  if (detectThreat(board) > 0) {
+    let square = detectThreat(board);
+    board[square] = COMPUTER_MARKER;
+  } else {
+    let square = emptySquares(board)[randomIndex];
+    board[square] = COMPUTER_MARKER;
+  }
 }
 
 function boardFull(board) {
