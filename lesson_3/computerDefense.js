@@ -114,6 +114,8 @@ function detectThreat(board) {
     return (humans === 2 && empty === 1);
   });
 
+  if (potentialThreat.length === 0) return 0;
+
   return potentialThreat[0].filter(position => board[position] === ' ');
 }
 
