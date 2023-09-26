@@ -91,15 +91,15 @@ const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 
 let board = {
-  1: 'O',
+  1: ' ',
   2: 'X',
-  3: ' ',
-  4: 'O',
-  5: ' ',
+  3: 'O',
+  4: ' ',
+  5: 'X',
   6: 'X',
-  7: ' ',
+  7: 'O',
   8: ' ',
-  9: 'X',
+  9: ' ',
 }
 console.log(board);
 
@@ -108,27 +108,13 @@ function emptySquares(board) {
 }
 
 function detectThreat(board) {
-  let emptySquare = 0;
   let potentialThreat = WINNING_LINES.filter(subArr => {
-    let count = 0;
-
-    for (let i = 0; i <= subArr.length; i++) {
-      if (board[subArr[i]] === 'X') count += 1;
-    }
-    
-    if (count === 2) return subArr;
+    let humans = subArr.filter(position => board[position] === 'X').length;
+    let empty = subArr.filter(position => board[position] === ' ').length;
+    return (humans === 2 && empty === 1);
   });
 
-  let immediateThreat = potentialThreat.filter(subArr => {
-    for (let i = 0; i <= subArr.length; i++) {
-      if (board[subArr[i]] === ' ') {
-        emptySquare = subArr[i];
-        return subArr
-      };
-    }
-  });
-
-  return emptySquare;
+  return potentialThreat[0].filter(position => board[position] === ' ');
 }
 
 function detectWinner(board) {
