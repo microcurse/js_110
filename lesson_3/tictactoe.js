@@ -105,27 +105,15 @@ function playerChoosesSquare(board) {
 }
 
 function detectThreat(board) {
-  let emptySquare = 0;
   let potentialThreat = WINNING_LINES.filter(subArr => {
-    let count = 0;
-
-    for (let i = 0; i <= subArr.length; i++) {
-      if (board[subArr[i]] === 'X') count += 1;
-    }
-    
-    if (count === 2) return subArr;
+    let humans = subArr.filter(position => board[position] === HUMAN_MARKER).length;
+    let empty = subArr.filter(position => board[position] === INITIAL_MARKER).length;
+    return (humans === 2 && empty === 1);
   });
 
-  let immediateThreat = potentialThreat.filter(subArr => {
-    for (let i = 0; i <= subArr.length; i++) {
-      if (board[subArr[i]] === ' ') {
-        emptySquare = subArr[i];
-        return subArr
-      };
-    }
-  });
+  if (potentialThreat.length === 0) return 0;
 
-  return emptySquare;
+  return potentialThreat[0].filter(position => board[position] === INITIAL_MARKER);
 }
 
 function computerChoosesSquare(board) {
