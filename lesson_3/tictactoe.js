@@ -116,10 +116,28 @@ function detectThreat(board) {
   return potentialThreat[0].filter(position => board[position] === INITIAL_MARKER);
 }
 
+function computerOffense(board) {
+  let potentialThreat = WINNING_LINES.filter(subArr => {
+    let computers = subArr.filter(position => board[position] ===  COMPUTER_MARKER).length;
+    let empty = subArr.filter(position => board[position] === INITIAL_MARKER).length;
+    return (computers === 2 && empty === 1);
+  });
+
+  if (potentialThreat.length === 0) return 0;
+
+  return potentialThreat[0].filter(position => board[position] === INITIAL_MARKER);
+}
+
 function computerChoosesSquare(board) {
   let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
 
-  if (detectThreat(board) > 0) {
+  // Determine whether there is a win for either the computer or the human
+  // If there's a threat of the human winning, pick defense
+  // If there is a chance of the computer winning, pick offense
+  if (computerOffense(board) > 0) {
+    let square = computerOffense(board);
+    board[square] = COMPUTER_MARKER;
+  } else if (detectThreat(board) > 0) {
     let square = detectThreat(board);
     board[square] = COMPUTER_MARKER;
   } else {
