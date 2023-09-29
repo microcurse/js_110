@@ -104,7 +104,15 @@ function playerChoosesSquare(board) {
   board[square] = HUMAN_MARKER;
 }
 
-function detectThreat(board) {
+function detectThreat(board, line) {
+
+  // line = [1, 2, 3] 
+  // take line and use that as a board position index
+  // board[1] --> HUMAN_MARKER
+  // board[2] --> HUMAN_MARKER
+  // board[3] --> INITIAL_MARKER
+
+  
   let potentialThreat = WINNING_LINES.filter(subArr => {
     let humans = subArr.filter(position => board[position] === HUMAN_MARKER).length;
     let empty = subArr.filter(position => board[position] === INITIAL_MARKER).length;
@@ -114,6 +122,8 @@ function detectThreat(board) {
   if (potentialThreat.length === 0) return 0;
 
   return potentialThreat[0].filter(position => board[position] === INITIAL_MARKER);
+
+  return null;
 }
 
 function computerOffense(board) {
@@ -134,6 +144,27 @@ function computerChoosesSquare(board) {
   // Determine whether there is a win for either the computer or the human
   // If there's a threat of the human winning, pick defense
   // If there is a chance of the computer winning, pick offense
+
+  // Iterate over each WINNING_LINE and check for either a "potential win" or "potential loss"
+  for (let x = 0; x < WINNING_LINES.length; x++ ) {
+    let line =  WINNING_LINES[x]; // currently iterated line
+    
+    // check currently iterated WINNING_LINE for threats
+
+    // detectThreat checks
+    // Input: array
+    // Output: a number
+    // - When a threat is detected, determine whether it's a win or a loss treat
+    // - Can we determine win or loss threat within the detectThreat?
+    // - Check for the existence of either two HUMAN_MARKERs or two COMPUTER_MARKERs
+    // - Return the board position occupied with INITIAL_MARKER
+    // - If no threats detected, return null
+
+    // Problems:
+    // - 
+    if (detectThreat(board, line))
+  }
+
   if (computerOffense(board) > 0) {
     let square = computerOffense(board);
     board[square] = COMPUTER_MARKER;
