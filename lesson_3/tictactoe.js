@@ -4,6 +4,7 @@ const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const CENTER_SQUARE = 5;
 const NUMBER_OF_WINS = 2;
+const whoGoesFirst = "computer"
 const WINNING_LINES = [ ['1', '2', '3'],
                         ['1', '5', '9'],
                         ['1', '4', '7'],
@@ -134,13 +135,13 @@ function computerRandomMove(board) {
 
 function computerChoosesSquare(board) {
   let square;
+  
   square = computerOffense(board);
-
   if (!square) square = computerDefense(board);
   if (!square && board[CENTER_SQUARE] === INITIAL_MARKER) {
-    board[CENTER_SQUARE] = COMPUTER_MARKER;
+    square = CENTER_SQUARE;
   } else if (!square && board[CENTER_SQUARE] !== INITIAL_MARKER) {
-    square = computerRandomMove(board);
+    square = emptySquares(board)[computerRandomMove(board)];
   }
 
   board[square] = COMPUTER_MARKER;
@@ -192,10 +193,10 @@ while(true) {
     // Playing the game loop
     while (true) {
       displayBoard(board, SCORES);
-    
+
       playerChoosesSquare(board);
       if (someoneWon(board) || boardFull(board)) break;
-      
+
       computerChoosesSquare(board);
       if (someoneWon(board) || boardFull(board)) break;
       
