@@ -198,6 +198,24 @@ function detectWinner(board) {
   return null;
 }
 
+function playAgain() {
+  prompt('Play again? (y or n)');
+  let answer;
+  while (true) {
+    answer = readline.question().toLowerCase();
+    if (answer === 'yes') {
+      answer = 'y';
+    } else if (answer === 'no') {
+      answer = 'n';
+    }
+
+    if (answer === 'y' || answer === 'n') break;
+    prompt("Sorry, that's invalid. Please enter yes or no");
+  }
+
+  return answer;
+}
+
 // Main Game Loop
 while(true) {
   let board = initializeBoard();
@@ -206,6 +224,7 @@ while(true) {
     player: 0,
     computer: 0
   }
+  let playAgainAnswer;
 
   chooseWhoPlaysFirst();
   
@@ -217,7 +236,7 @@ while(true) {
     while (true) {
       displayBoard(board, SCORES);
 
-      if (WHO_PLAYS_FIRST.choose === 'p') {
+      if (WHO_PLAYS_FIRST.choose === 'player') {
         playerChoosesSquare(board);
         if (someoneWon(board) || boardFull(board)) break;
   
@@ -251,10 +270,10 @@ while(true) {
   }
 
   displayBoard(board, SCORES);
-  prompt(`🎉 ${detectWinner(board)} is Tic Tac Toe Champion!! 🎉`)
-  prompt('Play again? (y or n)');
-  let answer = readline.question().toLowerCase()[0];
-  if (answer !== 'y') break;
+  prompt(`🎉 ${detectWinner(board)} is Tic Tac Toe Champion!! 🎉`);
+
+  playAgainAnswer = playAgain();
+  if (playAgainAnswer !== 'y') break;
 }
 
 prompt('Thanks for playing Tic Tac Toe!');
