@@ -2,6 +2,7 @@ const readline = require('readline-sync');
 const INITIAL_MARKER = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
+const CENTER_SQUARE = 5;
 const NUMBER_OF_WINS = 2;
 const WINNING_LINES = [ ['1', '2', '3'],
                         ['1', '5', '9'],
@@ -73,7 +74,7 @@ function joinOr(squares, delimiter = ', ', lastDelimiter = 'or') {
     let lastElement = squares.pop();
     result = squares.join(delimiter).concat(', ' + lastDelimiter  + ' ', lastElement);
   } else if (squares.length === 2) {
-    result = squares.join(' ' + delimiter + ' ');
+    result = squares.join(' ' + lastDelimiter + ' ');
   } else {
     return squares.join('');
   }
@@ -95,37 +96,54 @@ function playerChoosesSquare(board) {
   board[square] = HUMAN_MARKER;
 }
 
-function detectThreat(board, line) {
-  let emptySquare;
-  let lineMarkers = line.map(marker => board[marker]);
-
-  let computers = lineMarkers.filter(marker => marker === COMPUTER_MARKER); 
-  let humans = lineMarkers.filter(marker => marker === HUMAN_MARKER); 
-
-  if (computers.length === 2 || humans.length === 2) {
-    emptySquare = line.find(square => board[square] === INITIAL_MARKER);
+function detectThreat(board, line, marker) {
+  let lineMarkers = line.map(element => board[element]);
+  let threat = lineMarkers.filter(element => element === marker); 
+  if (threat.length === 2) {
+    return line.find(square => board[square] === INITIAL_MARKER);
   }
 
-  return emptySquare;
+  return null;
+}
+
+function computerOffense(board) {
+  let square;
+  for (let x = 0; x < WINNING_LINES.length; x++ ) {
+    let line =  WINNING_LINES[x]; 
+    square = detectThreat(board, line, COMPUTER_MARKER);
+    if (square) break;
+  }
+
+  return square;
+}
+
+function computerDefense(board) {
+  let square;
+  for (let x = 0; x < WINNING_LINES.length; x++ ) {
+    let line =  WINNING_LINES[x]; 
+    square = detectThreat(board, line, HUMAN_MARKER);
+    if (square) break;
+  }
+
+  return square;
+}
+
+function computerRandomMove(board) {
+  return Math.floor(Math.random() * emptySquares(board).length);
 }
 
 function computerChoosesSquare(board) {
   let square;
-  let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
+  square = computerOffense(board);
 
-  for (let x = 0; x < WINNING_LINES.length; x++ ) {
-    let line =  WINNING_LINES[x]; 
-    
-    square = detectThreat(board, line);
-    if (square) break;
+  if (!square) square = computerDefense(board);
+  if (!square && board[CENTER_SQUARE] === INITIAL_MARKER) {
+    board[CENTER_SQUARE] = COMPUTER_MARKER;
+  } else if (!square && board[CENTER_SQUARE] !== INITIAL_MARKER) {
+    square = computerRandomMove(board);
   }
 
-  if (square) {
-    board[square] = COMPUTER_MARKER;
-  } else {
-    square = emptySquares(board)[randomIndex];
-    board[square] = COMPUTER_MARKER;
-  }
+  board[square] = COMPUTER_MARKER;
 }
 
 function boardFull(board) {
