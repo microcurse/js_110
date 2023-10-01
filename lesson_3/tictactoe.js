@@ -20,14 +20,20 @@ function prompt(msg) {
 
 function chooseWhoPlaysFirst() {
   console.clear();
-  prompt("Welcome to Tic-Tac-Toe!");
+  prompt("Welcome to Tic Tac Toe!");
   prompt(`Let's play a best of ${NUMBER_OF_WINS + 1} games.`)
 
   while (true) {
     prompt("Who should go first? (player or computer)");
-    WHO_PLAYS_FIRST.choose = readline.question().toLowerCase()[0];
+    WHO_PLAYS_FIRST.choose = readline.question().toLowerCase();
     
-    if (WHO_PLAYS_FIRST.choose === 'p' || WHO_PLAYS_FIRST.choose === 'c') break;
+    if (WHO_PLAYS_FIRST.choose === 'p') {
+      WHO_PLAYS_FIRST.choose = 'player';
+    } else if (WHO_PLAYS_FIRST.choose === 'c') {
+      WHO_PLAYS_FIRST.choose = 'computer';
+    }
+    
+    if (WHO_PLAYS_FIRST.choose === 'player' || WHO_PLAYS_FIRST.choose === 'computer') break;
 
     prompt("Sorry, that's not a valid choice.");
   }
@@ -38,6 +44,7 @@ function displayBoard(board, scores) {
 
   console.log(`You are ${HUMAN_MARKER}. Computer is ${COMPUTER_MARKER}`); 
   console.log(`First to ${NUMBER_OF_WINS} wins is Tic Tac Toe champion!`); 
+  console.log(`${WHO_PLAYS_FIRST.choose} plays first each round`); 
 
   console.log('');
   console.log('     |     |');
