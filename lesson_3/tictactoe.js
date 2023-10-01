@@ -4,7 +4,6 @@ const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const CENTER_SQUARE = 5;
 const NUMBER_OF_WINS = 2;
-const whoGoesFirst = "computer"
 const WINNING_LINES = [ ['1', '2', '3'],
                         ['1', '5', '9'],
                         ['1', '4', '7'],
@@ -14,9 +13,24 @@ const WINNING_LINES = [ ['1', '2', '3'],
                         ['4', '5', '6'],
                         ['7', '8', '9'],
                       ];
-
+const WHO_PLAYS_FIRST = { choose: ' '};
 function prompt(msg) {
   console.log(`=> ${msg}`);
+}
+
+function chooseWhoPlaysFirst() {
+  console.clear();
+  prompt("Welcome to Tic-Tac-Toe!");
+  prompt(`Let's play a best of ${NUMBER_OF_WINS + 1} games.`)
+
+  while (true) {
+    prompt("Who should go first? (player or computer)");
+    WHO_PLAYS_FIRST.choose = readline.question().toLowerCase()[0];
+    
+    if (WHO_PLAYS_FIRST.choose === 'p' || WHO_PLAYS_FIRST.choose === 'c') break;
+
+    prompt("Sorry, that's not a valid choice.");
+  }
 }
 
 function displayBoard(board, scores) {
@@ -186,6 +200,8 @@ while(true) {
     computer: 0
   }
 
+  chooseWhoPlaysFirst();
+  
   // Round loop
   while (true) {
     board = initializeBoard();
@@ -194,12 +210,22 @@ while(true) {
     while (true) {
       displayBoard(board, SCORES);
 
-      playerChoosesSquare(board);
-      if (someoneWon(board) || boardFull(board)) break;
-
-      computerChoosesSquare(board);
-      if (someoneWon(board) || boardFull(board)) break;
-      
+      if (WHO_PLAYS_FIRST.choose === 'p') {
+        playerChoosesSquare(board);
+        if (someoneWon(board) || boardFull(board)) break;
+  
+        computerChoosesSquare(board);
+        if (someoneWon(board) || boardFull(board)) break;
+        
+      } else {
+        computerChoosesSquare(board);
+        if (someoneWon(board) || boardFull(board)) break;
+        displayBoard(board, SCORES);
+        
+        playerChoosesSquare(board);
+        if (someoneWon(board) || boardFull(board)) break;
+  
+      }
     }
     
     displayBoard(board, SCORES);
@@ -223,9 +249,5 @@ while(true) {
   let answer = readline.question().toLowerCase()[0];
   if (answer !== 'y') break;
 }
-
-// function playRound(board, scores) {
-
-// }
 
 prompt('Thanks for playing Tic Tac Toe!');
