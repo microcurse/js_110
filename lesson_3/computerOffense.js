@@ -79,7 +79,7 @@ let board = {
   6: 'X',
   7: ' ',
   8: ' ',
-  9: 'X',
+  9: ' ',
 }
 console.log(board);
 
@@ -88,28 +88,15 @@ function emptySquares(board) {
 }
 
 function detectThreat(board) {
-  let emptySquare = 0;
-
   let potentialThreat = WINNING_LINES.filter(subArr => {
-    let count = 0;
-
-    for (let i = 0; i <= subArr.length; i++) {
-      if (board[subArr[i]] === 'X') count += 1;
-    }
-    
-    if (count === 2) return subArr;
+    let humans = subArr.filter(position => board[position] ===  HUMAN_MARKER).length;
+    let empty = subArr.filter(position => board[position] === INITIAL_MARKER).length;
+    return (humans === 2 && empty === 1);
   });
 
-  potentialThreat.filter(subArr => {
-    for (let i = 0; i <= subArr.length; i++) {
-      if (board[subArr[i]] === ' ') {
-        emptySquare = subArr[i];
-        return subArr
-      };
-    }
-  });
+  if (potentialThreat.length === 0) return 0;
 
-  return emptySquare;
+  return potentialThreat[0].filter(position => board[position] === INITIAL_MARKER);
 }
 
 function detectWinner(board) {
@@ -135,7 +122,15 @@ function detectWinner(board) {
 }
 
 function computerOffense(board) {
-  
+  let potentialThreat = WINNING_LINES.filter(subArr => {
+    let computers = subArr.filter(position => board[position] ===  COMPUTER_MARKER).length;
+    let empty = subArr.filter(position => board[position] === INITIAL_MARKER).length;
+    return (computers === 2 && empty === 1);
+  });
+
+  if (potentialThreat.length === 0) return 0;
+
+  return potentialThreat[0].filter(position => board[position] === INITIAL_MARKER);
 }
 
 function computerChoosesSquare(board) {
@@ -150,5 +145,5 @@ function computerChoosesSquare(board) {
 }
 
 // computerDefense(board);
-console.log(detectThreat(board));
+console.log(computerOffense(board));
 // console.log(board);

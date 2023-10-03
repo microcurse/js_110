@@ -92,12 +92,12 @@ const COMPUTER_MARKER = 'O';
 
 let board = {
   1: ' ',
-  2: 'X',
+  2: 'O',
   3: 'O',
   4: ' ',
   5: 'X',
   6: 'X',
-  7: 'O',
+  7: 'X',
   8: ' ',
   9: ' ',
 }
@@ -107,16 +107,41 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER)
 }
 
-function detectThreat(board) {
-  let potentialThreat = WINNING_LINES.filter(subArr => {
-    let humans = subArr.filter(position => board[position] === 'X').length;
-    let empty = subArr.filter(position => board[position] === ' ').length;
-    return (humans === 2 && empty === 1);
-  });
+function detectThreat(board, line) {
 
-  if (potentialThreat.length === 0) return 0;
+  // line = [1, 2, 3] 
+  // use line to access value of that board position
+  // board[1] --> INITIAL_MARKER
+  // board[2] --> HUMAN_MARKER
+  // board[3] --> COMPUTER_MARKER
 
-  return potentialThreat[0].filter(position => board[position] === ' ');
+  let emptySquare;
+  let lineMarkers = line.map(marker => board[marker]); // [' ', 'X', 'O'];
+
+  // Filter method will let us create a new array containing only X's or O's
+  let computers = lineMarkers.filter(marker => marker === COMPUTER_MARKER); // ['O']
+  let humans = lineMarkers.filter(marker => marker === HUMAN_MARKER); // ['X']
+
+  // Check if lineMarkers has two X's or two O's
+  
+  if (computers.length === 2 || humans.length === 2) {
+    // find the empty marker and return its board square position
+    emptySquare = lineMarkers.find(square => board[square] === INITIAL_MARKER);
+  }
+
+
+  // let potentialThreat = WINNING_LINES.filter(subArr => {
+  //   let humans = subArr.filter(position => board[position] === HUMAN_MARKER).length;
+  //   let empty = subArr.filter(position => board[position] === INITIAL_MARKER).length;
+  //   return (humans === 2 && empty === 1);
+  // });
+
+  // if (potentialThreat.length === 0) return 0;
+
+  // return potentialThreat[0].filter(position => board[position] === INITIAL_MARKER);
+
+  // If no threats are detected, return undefined
+  return emptySquare;
 }
 
 function detectWinner(board) {
@@ -142,16 +167,54 @@ function detectWinner(board) {
 }
 
 function computerChoosesSquare(board) {
+  let square;
   let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
 
-  if (detectThreat(board) > 0) {
-    board[detectThreat(board)] = COMPUTER_MARKER;
+  // Determine whether there is a win for either the computer or the human
+  // If there's a threat of the human winning, pick defense
+  // If there is a chance of the computer winning, pick offense
+
+  // Iterate over each WINNING_LINE and check for either a "potential win" or "potential loss"
+  for (let x = 0; x < WINNING_LINES.length; x++ ) {
+    let line =  WINNING_LINES[x]; // currently iterated line
+    
+    // check currently iterated WINNING_LINE for threats
+
+    // detectThreat checks
+    // Input: array
+    // Output: a number
+    // - When a threat is detected, determine whether it's a win or a loss treat
+    // - Can we determine win or loss threat within the detectThreat?
+    // - Check for the existence of either two HUMAN_MARKERs or two COMPUTER_MARKERs
+    // - Return the board position occupied with INITIAL_MARKER
+    // - If no threats detected, return undefined
+
+    if (detectThreat(board, line)) {
+      square = detectThreat(board, line);
+    }
+  }
+  
+  // Problems:
+  // - line isn't defined outside of the for loop, therefore cannot be passed into detectThreat properly
+  if (square) {
+    board[square] = COMPUTER_MARKER;
   } else {
-    let square = emptySquares(board)[randomIndex];
+    square = emptySquares(board)[randomIndex];
     board[square] = COMPUTER_MARKER;
   }
+
+  // if (computerOffense(board) > 0) {
+  //   let square = computerOffense(board);
+  //   board[square] = COMPUTER_MARKER;
+  // } else if (detectThreat(board) > 0) {
+  //   let square = detectThreat(board);
+  //   board[square] = COMPUTER_MARKER;
+  // } else {
+  //   let square = emptySquares(board)[randomIndex];
+  //   board[square] = COMPUTER_MARKER;
+  // }
 }
 
-// computerDefense(board);
-console.log(detectThreat(board));
-// console.log(board);
+computerChoosesSquare(board);
+// console.log(detectThreat(board));
+console.log(board);
