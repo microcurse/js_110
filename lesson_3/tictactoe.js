@@ -1,5 +1,3 @@
-/* eslint-disable no-constant-condition */
-/* eslint-disable no-console */
 const readline = require('readline-sync');
 
 const INITIAL_MARKER = ' ';
