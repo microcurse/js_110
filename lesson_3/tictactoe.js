@@ -9,43 +9,53 @@ const WINNING_LINES = [['1', '2', '3'], ['1', '5', '9'], ['1', '4', '7'], ['2', 
 ];
 const PLAYER = 'player';
 const COMPUTER = 'computer';
-const WHO_PLAYS_FIRST = { choose: ' ' };
+// const WHO_PLAYS_FIRST = { choose: ' ' };
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
 
 function chooseWhoPlaysFirst() {
+  let whoPlaysFirst = '';
   console.clear();
   prompt('Welcome to Tic Tac Toe!');
-  prompt(`Let's play ${NUMBER_OF_WINS + 1} games.`);
+  prompt(`First to ${NUMBER_OF_WINS} wins is crowned "Tic Tac Toe Champion!".`);
 
   while (true) {
-    prompt('Who should go first? (player or computer)');
-    WHO_PLAYS_FIRST.choose = readline.question().toLowerCase();
+    prompt(`Who should go first? ${PLAYER} or ${COMPUTER}` );
+    whoPlaysFirst = readline.question().toLowerCase();
 
-    if (WHO_PLAYS_FIRST.choose === PLAYER[0]) {
-      WHO_PLAYS_FIRST.choose = PLAYER;
-    } else if (WHO_PLAYS_FIRST.choose === COMPUTER[0]) {
-      WHO_PLAYS_FIRST.choose = COMPUTER;
+    if (whoPlaysFirst === PLAYER || whoPlaysFirst === PLAYER[0]) {
+      whoPlaysFirst = PLAYER;
+    } else if (whoPlaysFirst === COMPUTER || whoPlaysFirst === COMPUTER[0]) {
+      whoPlaysFirst = COMPUTER;
     }
 
-    if (WHO_PLAYS_FIRST.choose === PLAYER || WHO_PLAYS_FIRST.choose === COMPUTER) break;
+    if (whoPlaysFirst === PLAYER || whoPlaysFirst === COMPUTER) break;
 
     prompt("Sorry, that's not a valid choice.");
   }
+
+  return whoPlaysFirst;
 }
 
 function displayScore(scores) {
   prompt(`Player score: ${scores.player} | Computer score: ${scores.computer}`);
 }
 
-function displayBoard(board, scores) {
+function displayGameInterface(board, firstPlayer, scores) {
   console.clear();
+  displayBoard(board, firstPlayer);
+  displayScore(scores);
+}
 
+function displayGameInfo(firstPlayer) {
   console.log(`You are ${HUMAN_MARKER}. Computer is ${COMPUTER_MARKER}`);
   console.log(`First to ${NUMBER_OF_WINS} wins is Tic Tac Toe champion!`);
-  console.log(`${WHO_PLAYS_FIRST.choose} plays first each round`);
+  console.log(`${firstPlayer} plays first each round`);
+}
 
+function displayBoard(board, firstPlayer) {
+  displayGameInfo(firstPlayer);
   console.log('');
   console.log('     |     |');
   console.log(`  ${board['1']}  |  ${board['2']}  |  ${board['3']}  `);
@@ -59,8 +69,6 @@ function displayBoard(board, scores) {
   console.log(`  ${board['7']}  |  ${board['8']}  |  ${board['9']}  `);
   console.log('     |     |');
   console.log('');
-
-  displayScore(scores);
 }
 
 function updateScores(winner, scores) {
@@ -208,47 +216,64 @@ function alternatePlayer(currentPlayer) {
   return PLAYER;
 }
 
-// Main Game Loop
-while (true) {
-  let board = initializeBoard();
-  const SCORES = { player: 0, computer: 0 };
+function reportGameWinner(board) {
+  if (someoneWon(board)) {
+    prompt(`${detectWinner(board)} won!`);
+  } else {
+    prompt("It's a tie!");
+  }
+}
 
-  chooseWhoPlaysFirst();
-  const FIRST_PLAYER = WHO_PLAYS_FIRST.choose;
-  let currentPlayer = FIRST_PLAYER;
+function reachedRequiredWins(scores) {
+  if (scores.player === NUMBER_OF_WINS) {
+    return PLAYER;
+  } else if (scores.computer === NUMBER_OF_WINS) {
+    return COMPUTER;
+  }
 
-  // Round loop
+  return null;
+}
+
+function playGame() {
+  while (true) {
+    let board = initializeBoard();
+    const SCORES = { player: 0, computer: 0 };
+
+    let firstPlayer = chooseWhoPlaysFirst();
+
+    playRound(board, firstPlayer, SCORES);
+
+    displayGameInterface(board, firstPlayer, SCORES);
+    prompt(`🎉 ${reachedRequiredWins(SCORES)} is Tic Tac Toe Champion!! 🎉`);
+
+    const PLAY_AGAIN_ANSWER = playAgain();
+    if (PLAY_AGAIN_ANSWER !== 'y') break;
+  }
+}
+
+function playRound(board, currentPlayer, scores) {
+  const FIRST_PLAYER = currentPlayer;
   while (true) {
     board = initializeBoard();
 
-    // Playing the game loop
     while (true) {
-      displayBoard(board, SCORES);
+      displayGameInterface(board, FIRST_PLAYER, scores);
       chooseSquare(board, currentPlayer);
       currentPlayer = alternatePlayer(currentPlayer);
       if (someoneWon(board) || boardFull(board)) break;
     }
 
-    displayBoard(board, SCORES);
+    displayGameInterface(board, FIRST_PLAYER, scores);
 
-    if (someoneWon(board)) {
-      prompt(`${detectWinner(board)} won!`);
-    } else {
-      prompt("It's a tie!");
-    }
+    reportGameWinner(board);
 
-    updateScores(detectWinner(board), SCORES);
+    updateScores(detectWinner(board), scores);
     readline.question("Press 'enter' to continue");
-
     currentPlayer = FIRST_PLAYER;
-    if (SCORES.player === NUMBER_OF_WINS || SCORES.computer === NUMBER_OF_WINS) break;
+    if (reachedRequiredWins(scores)) break;
   }
-
-  displayBoard(board, SCORES);
-  prompt(`🎉 ${detectWinner(board)} is Tic Tac Toe Champion!! 🎉`);
-
-  const PLAY_AGAIN_ANSWER = playAgain();
-  if (PLAY_AGAIN_ANSWER !== 'y') break;
 }
+
+playGame();
 
 prompt('Thanks for playing Tic Tac Toe!');
