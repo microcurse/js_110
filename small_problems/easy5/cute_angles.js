@@ -76,7 +76,7 @@ const SECONDS_PER_MINUTE = 60;
 const SECONDS_PER_DEGREE = MINUTES_PER_DEGREE * SECONDS_PER_MINUTE;
 
 function dms(floatNum) {
-  let degrees = Math.floor(floatNum);
+  let degrees = degreeCalc(floatNum);
   let minutes = Math.floor((floatNum - degrees) * MINUTES_PER_DEGREE);
   let seconds = Math.floor((floatNum - degrees - (minutes / MINUTES_PER_DEGREE)) * SECONDS_PER_DEGREE);
 
@@ -88,9 +88,50 @@ function padZeroes(number) {
   return numStr.length < 2 ? ('0' + numStr) : numStr;
 }
 
+function degreeCalc(number) {
+  let numberCalc = Math.floor(number);
+  const CEILING = 360;
+  const FLOOR = 0;
+
+  if (numberCalc > CEILING) {
+    return numberCalc - CEILING;
+  } else if (numberCalc < FLOOR) {
+    return CEILING + numberCalc;
+  }
+
+  return numberCalc;
+}
+
 console.log(dms(30));           // 30°00'00"
 console.log(dms(76.73));        // 76°43'48"
 console.log(dms(254.6));        // 254°35'59"
 console.log(dms(93.034773));    // 93°02'05"
 console.log(dms(0));            // 0°00'00"
 console.log(dms(360));          // 360°00'00" or 0°00'00"
+
+// Further Exploration
+// If degree is greater than 360, subtract given number by 360, and reassign current number to the
+// difference.
+// Keep doing this until the given number is less than 360
+
+// CEILING = 360
+// FLOOR = 0
+
+// givenNum = 380
+// if givenNum > CEILING
+// adjustment = givenNum - CEILING -> 20
+// givenNum = adjustment -> 20
+
+// givenNum = 400
+// adjustment  = givenNum - CEILING -> 80
+// givenNum = adjustment -> 80
+
+// givenNum = -1
+// if givenNum < FLOOR
+// adjustment =  CEILING - givenNum -> 359
+// givenNum = adjustment (pass negative sign) -> -359
+
+console.log(dms(-1));   // 359°00'00"
+console.log(dms(400));  // 40°00'00"
+console.log(dms(-40));  // 320°00'00"
+console.log(dms(-420)); // 300°00'00"
