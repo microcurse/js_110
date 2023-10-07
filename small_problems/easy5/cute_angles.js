@@ -58,7 +58,7 @@
  *  - Ex. 254.6 - 254 = .6
  * - Calculate the minutes
  *  - Multiply 60 by the decimal number representing a fraction of a degree (minutes)
- *  - If there is a remainder go to next step
+ *  - If there is return value is not a whole number (has a decimal) continue to next step
  * - Calculate the seconds
  *  - Multiply 60 by the decimal number reresenting a fraction of a minute (seconds)
  * -  Use Math.floor to return the seconds without any further decimals.
@@ -69,3 +69,28 @@
  * 
  * Code
  */
+
+const DEGREE_SYMBOL = '\xB0';
+const MINUTES_PER_DEGREE = 60;
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_DEGREE = MINUTES_PER_DEGREE * SECONDS_PER_MINUTE;
+
+function dms(floatNum) {
+  let degrees = Math.floor(floatNum);
+  let minutes = Math.floor((floatNum - degrees) * MINUTES_PER_DEGREE);
+  let seconds = Math.floor((floatNum - degrees - (minutes / MINUTES_PER_DEGREE)) * SECONDS_PER_DEGREE);
+
+  return String(degrees) + DEGREE_SYMBOL + padZeroes(minutes) + "'" + padZeroes(seconds) + '"';
+}
+
+function padZeroes(number) {
+  let numStr = String(number);
+  return numStr.length < 2 ? ('0' + numStr) : numStr;
+}
+
+console.log(dms(30));           // 30°00'00"
+console.log(dms(76.73));        // 76°43'48"
+console.log(dms(254.6));        // 254°35'59"
+console.log(dms(93.034773));    // 93°02'05"
+console.log(dms(0));            // 0°00'00"
+console.log(dms(360));          // 360°00'00" or 0°00'00"
