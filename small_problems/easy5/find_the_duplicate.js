@@ -12,21 +12,38 @@
  * - The output should be the number that was a duplicate 
  * 
  * Implicit Requirements:
+ * N/A
  * 
  * Questions:
+ * N/A
  * 
  * Examples and test cases
+ * [1, 5, 3, 1] -> 1
  * 
  * Data Structure
+ * Array and number
  * 
  * Algorithm
+ * - Iterate over array
+ * - During the currently iterated element
+ *  - Iterate over the whole array again
+ *  - Checking each element if it matches with the currently iterated element
+ * 
  * 
  * Code
  */
 
 function findDup(arr) {
-  
-  return arr.find((element) => element === element);
+  let sortedArr = arr.slice().sort();
+  let result = 0;
+
+  for (let idx = 0; idx < sortedArr.length; idx += 1) {
+    if (sortedArr[idx] === sortedArr[idx + 1]) {
+      result = sortedArr[idx];
+    }
+  }
+
+  return result;
 }
 
 
