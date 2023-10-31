@@ -64,7 +64,6 @@
 
 const MINUTES_PER_HOUR = 60;
 const HOURS_PER_DAY = 24;
-const MINUTES_PER_DAY = MINUTES_PER_HOUR * HOURS_PER_DAY;
 
 // Convert minutes given to time
 function timeOfDay(totalMinutes) {
@@ -74,25 +73,34 @@ function timeOfDay(totalMinutes) {
   if (Math.sign(totalMinutes) === -1) {
     minutes = calculateNegativeMinutes(totalMinutes);
     hours = calculateNegativeHours(totalMinutes);
+    if (hours === HOURS_PER_DAY) hours = 23;
   } else {
     minutes = totalMinutes % MINUTES_PER_HOUR;
     hours = calculateHours(totalMinutes);
   }
 
-  return `${hours}:${minutes}`;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
 function calculateNegativeMinutes(totalMinutes) {
-  if ((totalMinutes * -1) < MINUTES_PER_HOUR) return MINUTES_PER_HOUR + totalMinutes;
-  return Math.floor(totalMinutes % MINUTES_PER_HOUR) + MINUTES_PER_HOUR;
+  if (totalMinutes % MINUTES_PER_HOUR === 0) {
+    return 0;
+  } else if (totalMinutes % MINUTES_PER_HOUR < 0) {
+    return MINUTES_PER_HOUR + (totalMinutes % MINUTES_PER_HOUR);
+  } else {
+    return Math.abs(totalMinutes) % MINUTES_PER_HOUR;
+  }
 }
 
 function calculateNegativeHours(totalMinutes) {
   let hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
-  if ((hours * -1) === HOURS_PER_DAY) return 0;
-  if ((hours * -1) < HOURS_PER_DAY) return HOURS_PER_DAY + hours;
-
-  return Math.floor(hours / HOURS_PER_DAY) + HOURS_PER_DAY;
+  if (hours % HOURS_PER_DAY === 0) {
+    return 0;
+  } else if (hours % HOURS_PER_DAY < 0) {
+    return HOURS_PER_DAY + (hours % HOURS_PER_DAY);
+  } else {
+    return Math.abs(hours) % HOURS_PER_DAY;
+  }
 }
 
 function calculateHours(totalMinutes) {
@@ -103,27 +111,10 @@ function calculateHours(totalMinutes) {
   return Math.floor(hours / HOURS_PER_DAY)
 }
 
-// This will handle the output string
-function outputConversion(number) {
-
-}
-
-console.log(timeOfDay(0)); // 0:0
-console.log(timeOfDay(70)); // 1:10
-console.log(timeOfDay(3000)); // 2:0
-console.log(timeOfDay(1440)); // 0:0
-console.log(timeOfDay(800)); // 13:20
-console.log(timeOfDay(35)); // 0:35
-console.log(timeOfDay(-3)); // 23:57
-console.log(timeOfDay(-4231)); // 01:29 currently outputs '21:29'
-
-// console.log(timeOfDay(70) === '1:10');
-// console.log(timeOfDay(3000) === '2:0'); // should be '2:00'
-
-// console.log(timeOfDay(0) === "00:00");
-// console.log(timeOfDay(-3) === "23:57");
-// console.log(timeOfDay(35) === "00:35");
-// console.log(timeOfDay(-1437) === "00:03");
-// console.log(timeOfDay(3000) === "02:00");
-// console.log(timeOfDay(800) === "13:20");
-// console.log(timeOfDay(-4231) === "01:29");
+console.log(timeOfDay(0) === "00:00");
+console.log(timeOfDay(-3) === "23:57");
+console.log(timeOfDay(35) === "00:35");
+console.log(timeOfDay(-1437) === "00:03");
+console.log(timeOfDay(3000) === "02:00");
+console.log(timeOfDay(800) === "13:20");
+console.log(timeOfDay(-4231) === "01:29");
