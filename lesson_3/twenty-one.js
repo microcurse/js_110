@@ -52,7 +52,7 @@ function shuffleDeck(array) {
 function calculateCardsValue(cards) {
   let values = cards.map((card) => card[0]);
   let sum = 0;
-  
+
   values.forEach((value) => {
     if (value === 'Ace') {
       sum += 11;
@@ -87,11 +87,13 @@ function busted(total) {
 function playerTurn(deck, playersCards) {
   while(true) {
     playersCards.value = calculateCardsValue(playersCards.cards);
-    prompt(`Your cards are: ${playersCards.cards}`);
-    prompt(`Your total is: ${playersCards.value}`);
+    prompt(`Your cards: ${playersCards.cards}`);
+    prompt(`Your total: ${playersCards.value}`);
     prompt("hit or stay?");
 
     let answer = readline.question().toLowerCase();
+
+    console.clear();
 
     if (answer === 'stay' || busted(playersCards.value)) break;
 
@@ -101,7 +103,7 @@ function playerTurn(deck, playersCards) {
       if (busted(playersCards.value)) break;
     }
 
-    prompt(playersCards.value);
+    // prompt(playersCards.value);
   }
 
 }
@@ -145,32 +147,43 @@ function calculateResults(playersTotal, dealersTotal) {
 }
 
 function playTwentyOne() {
-  const DECK = initializeDeck();
-  shuffleDeck(DECK);
-  const PLAYERS_CARDS = { cards: DECK.splice(0, 2), value: 0 };
-  const DEALERS_CARDS = { cards: DECK.splice(3, 2), value: 0 };
-  let winner;
-
-  playerTurn(DECK, PLAYERS_CARDS);
-
-  if (busted(PLAYERS_CARDS.value)) {
-    prompt(`Your total is: ${PLAYERS_CARDS.value}`);
-    prompt(`You busted!`);
-  } else {
-    prompt(PLAYERS_CARDS.value);
-    prompt("You chose to stay!");
-    dealersTurn(DECK, DEALERS_CARDS);
-
-    if (busted(DEALERS_CARDS.value)) {
-      prompt(`Dealer busted`);
+  while (true) {
+    const DECK = initializeDeck();
+    shuffleDeck(DECK);
+    const PLAYERS_CARDS = { cards: DECK.splice(0, 2), value: 0 };
+    const DEALERS_CARDS = { cards: DECK.splice(3, 2), value: 0 };
+    let winner;
+  
+    playerTurn(DECK, PLAYERS_CARDS);
+  
+    if (busted(PLAYERS_CARDS.value)) {
+      prompt(`Your total is: ${PLAYERS_CARDS.value}`);
+      prompt(`You busted!`);
     } else {
-      prompt(`The dealer stays at: ${DEALERS_CARDS.value}`);
+      prompt(PLAYERS_CARDS.value);
+      prompt("You chose to stay!");
+      dealersTurn(DECK, DEALERS_CARDS);
+  
+      console.clear();
+  
+      if (busted(DEALERS_CARDS.value)) {
+        prompt(`Dealer busted`);
+      } else {
+        prompt(`The dealer stays at: ${DEALERS_CARDS.value}`);
+      }
+  
     }
+  
+    winner = calculateResults(PLAYERS_CARDS.value, DEALERS_CARDS.value);
+    displayResult(winner);
+    
+    console.clear();
+    if (!playAgain()) {
 
+    }
   }
 
-  winner = calculateResults(PLAYERS_CARDS.value, DEALERS_CARDS.value);
-  displayResult(winner);
+  prompt(`Thanks for playing Twenty-One!`);
 }
 
 playTwentyOne();
