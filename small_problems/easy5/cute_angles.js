@@ -58,7 +58,11 @@
  *  - Ex. 254.6 - 254 = .6
  * - Calculate the minutes
  *  - Multiply 60 by the decimal number representing a fraction of a degree (minutes)
+<<<<<<< HEAD
  *  - If there is return value is not a whole number (has a decimal) continue to next step
+=======
+ *  - If there is a remainder go to next step
+>>>>>>> bonus-features
  * - Calculate the seconds
  *  - Multiply 60 by the decimal number reresenting a fraction of a minute (seconds)
  * -  Use Math.floor to return the seconds without any further decimals.
@@ -68,6 +72,7 @@
  * - Need to consider how to handle leading zeroes on single digit minutes or seconds.
  * 
  * Code
+<<<<<<< HEAD
  */
 
 const DEGREE_SYMBOL = '\xB0';
@@ -135,3 +140,6 @@ console.log(dms(-1));   // 359°00'00"
 console.log(dms(400));  // 40°00'00"
 console.log(dms(-40));  // 320°00'00"
 console.log(dms(-420)); // 300°00'00"
+=======
+ */
+>>>>>>> bonus-features
