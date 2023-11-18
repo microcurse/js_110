@@ -14,8 +14,7 @@
  * 
  * TODO
  * - Fix cardToString function
- * - Add initially delt cards
- *  - Dealer shows one card face up and one card face down
+ *  - Currently works, however, it still needs an oxford comma between the last two elements.
  * - Create a graphical representation?
  * 
  */
@@ -70,38 +69,37 @@ function calculateCardsValue(cards) {
   return sum;
 }
 
-// function cardToString(cards) {
-//   let result = '';
-//   cards.forEach((card) => {
-//     result += card.join(' of ');
-//     result += ", "
-//   });
-
-//   return result;
-// }
-
-function cardToString(cards, delimiter = 'of', lastDelimiter = 'and') {
+function cardToString(cards, delimiter = ' of ', lastDelimiter = 'and') {
 
   /**
    * Input: [[8, Diamonds], [10, Spades]]
-   * Output '8 of Diamonds and 10 of Spades
+   * Output '8 of Diamonds and 10 of Spades'
+   * Input with 3 elements: [[8, Diamonds], [10, Spades]. [Ace, Spades]]
+   * Output '8 of Diamonds, 10 of Spades, and Ace of Spades'
    * - Each card (inner array) is separated by 'of'
    *  - VALUE of SUIT
    * - If there are more than two cards, comma separate each one.
    * - The last two cards are separated by 'and'
    * 
    */
+  if (cards.length === 2) {
+    return cards.map(card => card.join(delimiter)).join(` ${lastDelimiter} `);
+  }
 
-
-  console.log(cards);
   let result = '';
-  if (cards.length >= 3) {
-    let lastElement = cards.pop();
-    result = cards.join(delimiter).concat(', ' + lastDelimiter  + ' ', lastElement);
-  } else if (cards.length === 2) {
-    result = cards.join(' ' + delimiter + ' ');
-  } else {
-    return cards.join('');
+
+  for (let i = 0; i < cards.length; i++) {
+    const subArrStr = cards[i].map(item => item.toString()).join(delimiter);
+
+    if (i === 0) {
+      result += subArrStr;
+    } else if (i === cards.length - 1) {
+      result += ` ${lastDelimiter} ${subArrStr}`;
+    } else if (i === cards.length - 2) {
+      result += `, ${subArrStr}`;
+    } else {
+      result += `, ${subArrStr}`;
+    }
   }
 
   return result;
@@ -114,7 +112,7 @@ function busted(total) {
 function playerTurn(deck, playersCards) {
   while(true) {
     playersCards.value = calculateCardsValue(playersCards.cards);
-    prompt(`Your cards: ${playersCards.cards}`);
+    prompt(`Your cards: ${cardToString(playersCards.cards)}`);
     prompt(`Your total: ${playersCards.value}`);
     prompt("(h)it or (s)tay?");
     let answer;
@@ -126,9 +124,9 @@ function playerTurn(deck, playersCards) {
       } else if (answer === 'stay') {
         answer = 's';
       }
-  
+
       if (answer === 'h' || answer === 's') break;
-      prompt("Sorry, that's invalid. Please enter (h)it or (s)tay");
+      prompt("Sorry, input is invalid. Please enter (h)it or (s)tay");
     }
 
     console.clear();
@@ -211,9 +209,9 @@ function playTwentyOne() {
     const DEALERS_CARDS = { cards: DECK.splice(3, 2), value: 0 };
     let winner;
 
-    // Reveal cards here
-    prompt(`Dealer is showing: ${DEALERS_CARDS.cards}`);
-    prompt(`You're showing: ${PLAYERS_CARDS.cards}`);
+    // Reveal initially dealt cards
+    prompt(`Dealer is showing: ${DEALERS_CARDS.cards[0].join(' of ')}`);
+    // prompt(`You're showing: ${cardToString(PLAYERS_CARDS.cards)}`);
 
     playerTurn(DECK, PLAYERS_CARDS);
 
@@ -223,19 +221,19 @@ function playTwentyOne() {
     } else {
       prompt(PLAYERS_CARDS.value);
       prompt("You chose to stay!");
-      
+
       console.clear();
 
       dealersTurn(DECK, DEALERS_CARDS);
-  
+
       if (busted(DEALERS_CARDS.value)) {
         prompt(`Dealer busted`);
       } else {
         prompt(`The dealer stays at: ${DEALERS_CARDS.value}`);
       }
-  
+
     }
-  
+
     winner = calculateResults(PLAYERS_CARDS.value, DEALERS_CARDS.value);
     displayResult(winner);
     
