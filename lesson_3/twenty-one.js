@@ -1,12 +1,20 @@
 /* eslint-disable no-console */
 /* eslint-disable no-constant-condition */
 /* eslint-disable no-param-reassign */
+
+/**
+ * TODO:
+ * - Round loop not ending when busting or staying.
+ * - Score not being kept
+ * 
+ */
 const readline = require('readline-sync');
 
 const SUITS = ['Diamonds', 'Clubs', 'Hearts', 'Spades'];
 const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
 const WINNING_NUMBER = 21;
 const COMPUTER_STAY_NUMBER = 17;
+const ROUNDS_TO_WIN = 3;
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
@@ -134,6 +142,15 @@ function displayResult(winner) {
   }
 }
 
+function displayScoreBoard(playerScore, dealerScore, round) {
+  // This will manage displaying the round number, player score, computer score.
+  // First to three points total wins.
+  console.clear();
+  console.log(` ------------ ROUND #${round} ------------- `);
+  console.log(`| Player Score: ${playerScore} | Dealer Score: ${dealerScore} |`);
+  console.log(` ----------------------------------- `);
+}
+
 function calculateResults(playersTotal, dealersTotal) {
   if (busted(dealersTotal)) return 'Player';
   if (busted(playersTotal)) return 'Dealer';
@@ -141,6 +158,14 @@ function calculateResults(playersTotal, dealersTotal) {
   if (playersTotal > dealersTotal) return 'Player';
 
   return null;
+}
+
+function updateScore(playerScore, dealerScore, winner) {
+  if (winner === 'Player') {
+    playerScore += 1;
+  } else {
+    dealerScore += 1;
+  }
 }
 
 function playAgain() {
@@ -163,37 +188,51 @@ function playAgain() {
 }
 
 function playTwentyOne() {
+  // This plays the game
   while (true) {
-    console.clear();
-    const DECK = initializeDeck();
-    shuffleDeck(DECK);
-    const PLAYER = { cards: DECK.splice(0, 2), value: 0 };
-    const DEALER = { cards: DECK.splice(3, 2), value: 0 };
+    // Scoreboard should only display at the top of the game, and update after each round.
+    displayScoreBoard();
+    // This plays a round of twenty one
+    while (true) {
+      // Merge the console clear into the display of scoreboard
+      const DECK = initializeDeck();
+      shuffleDeck(DECK);
+      const PLAYER = { cards: DECK.splice(0, 2), value: 0, score: 0 };
+      const DEALER = { cards: DECK.splice(3, 2), value: 0, score: 0 };
+      let round = 1;
+      displayScoreBoard(PLAYER.score, DEALER.score, round);
 
-    prompt(`Dealer is showing: ${DEALER.cards[0].join(' of ')}`);
-    playerTurn(DECK, PLAYER);
+      prompt(`Dealer is showing: ${DEALER.cards[0].join(' of ')}`);
+      // Displaying board involves the current round, the player's score, and the computer's score
+      playerTurn(DECK, PLAYER);
 
-    if (busted(PLAYER.value)) {
-      prompt(`Your total is: ${PLAYER.value}`);
-      prompt('You busted!');
-    } else {
-      prompt(PLAYER.value);
-      prompt('You chose to stay!');
-
-      console.clear();
-
-      dealersTurn(DECK, DEALER);
-
-      if (busted(DEALER.value)) {
-        prompt('Dealer busted');
+      if (busted(PLAYER.value)) {
+        prompt(`Your total is: ${PLAYER.value}`);
+        prompt('You busted!');
       } else {
-        prompt(`The dealer stays at: ${DEALER.value}`);
+        prompt(PLAYER.value);
+        prompt('You chose to stay!');
+
+        // console.clear();
+        displayScoreBoard(PLAYER, DEALER, round);
+
+        dealersTurn(DECK, DEALER);
+
+        if (busted(DEALER.value)) {
+          prompt('Dealer busted');
+        } else {
+          prompt(`The dealer stays at: ${DEALER.value}`);
+        }
       }
+
+      const WINNER = calculateResults(PLAYER.value, DEALER.value);
+      displayResult(WINNER);
+      updateScore(PLAYER.score, DEALER.score, WINNER);
+      round += 1;
+      if (PLAYER.score === ROUNDS_TO_WIN || DEALER.score === ROUNDS_TO_WIN) break;
     }
 
-    const WINNER = calculateResults(PLAYER.value, DEALER.value);
-    displayResult(WINNER);
-
+    // displayScoreBoard(PLAYER, DEALER, round);
     if (playAgain() !== 'y') break;
   }
 
