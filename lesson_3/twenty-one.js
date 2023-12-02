@@ -156,7 +156,7 @@ function calculateResults(playersTotal, dealersTotal) {
 function updateScore(score, winner) {
   if (winner === 'Player') {
     score.player += 1;
-  } else {
+  } else if (winner === 'Dealer') {
     score.dealer += 1;
   }
 }
@@ -180,10 +180,20 @@ function playAgain() {
   return answer;
 }
 
+function displayGameWinner(score, round) {
+  console.clear();
+  displayScoreBoard(score, round);
+  if (score.player === 3) {
+    console.log('🎉 You won the game! 🎉');
+  } else {
+    console.log('🤖 The house wins the game! 🤖');
+  }
+}
+
 function playTwentyOne() {
   // This plays the game
-  let round = 1;
   while (true) {
+    let round = 1;
     const DECK = initializeDeck();
     shuffleDeck(DECK);
     const SCORE = { player: 0, dealer: 0 };
@@ -218,11 +228,12 @@ function playTwentyOne() {
       displayResult(WINNER);
       updateScore(SCORE, WINNER);
 
+      readline.question('Press enter to continue');
       if (SCORE.player === ROUNDS_TO_WIN || SCORE.dealer === ROUNDS_TO_WIN) break;
-      readline.question('Press any key to continue');
       round += 1;
     }
 
+    displayGameWinner(SCORE, round);
     if (playAgain() !== 'y') break;
   }
 
