@@ -9,22 +9,48 @@ const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', '
 const WINNING_NUMBER = 21;
 const COMPUTER_STAY_NUMBER = 17;
 const ROUNDS_TO_WIN = 3;
+const initializeDeck = () => {
+  /**
+   * Can each card be created as an object?
+   *
+   * Explicit requirements:
+   * - INPUT: two arrays (SUITS, VALUES) containing strings
+   * - OUTPUT: an object (CARD) containing a suit and a value
+   *
+   * Implicit requirements:
+   * - N/A
+   *
+   * Examples and test cases:
+   * - SUITS = ['Diamonds', 'Clubs', 'Hearts', 'Spades']
+   * - VALUES = ['2', '3', '4', '5']
+   *
+   * DECK = [ {SUIT: 'Diamonds', VALUE: '2'}, {SUIT: 'Clubs', VALUE: '4'} ]
+   * DECK = {
+   *  card: { suit: 'diamonds', value: '2' }
+   *  card: { suit: 'diamonds', value: '2' } ?
+   * }
+   *
+   * Problem is when creating a card for each SUIT/VALUE pair, the name of each object
+   * within deck (card)needs to be unique.
+   *
+   */
+
+  const INIT_DECK = [];
+  // This creates a card using a value and a suit and concatenating them to the same array.
+  VALUES.forEach((value) => {
+    SUITS.forEach((suit) => {
+      INIT_DECK.push([value, suit]);
+    });
+  });
+
+  return INIT_DECK;
+};
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
 
-function initializeDeck() {
-  const DECK = [];
-
-  VALUES.forEach((value) => {
-    SUITS.forEach((suit) => {
-      DECK.push([value, suit]);
-    });
-  });
-
-  return DECK;
-}
+const DECK = initializeDeck();
 
 function shuffleDeck(array) {
   const NEW_ARRAY = array;
@@ -82,29 +108,38 @@ function busted(total) {
   return total > WINNING_NUMBER;
 }
 
+function displayGameMessages(player, cards) {
+  prompt(`Your cards: ${cardToString(cards)}`);
+  prompt(`Your total: ${player.value}`);
+  prompt('(h)it or (s)tay?');
+}
+
+function askPlayerHitOrStay() {
+  let answer;
+  while (true) {
+    answer = readline.question().toLowerCase();
+    if (answer === 'hit') {
+      answer = 'h';
+    } else if (answer === 'stay') {
+      answer = 's';
+    }
+
+    if (answer === 'h' || answer === 's') break;
+    prompt('Sorry, input is invalid. Please enter (h)it or (s)tay');
+  }
+
+  return answer;
+}
+
 function playerTurn(deck, player) {
   while (true) {
     const PLAYERS_CARDS = player.cards;
     player.value = calculateCardsValue(PLAYERS_CARDS);
-    prompt(`Your cards: ${cardToString(PLAYERS_CARDS)}`);
-    prompt(`Your total: ${player.value}`);
-    prompt('(h)it or (s)tay?');
-    let answer;
+    displayGameMessages(player, PLAYERS_CARDS);
+    const ANSWER = askPlayerHitOrStay();
 
-    while (true) {
-      answer = readline.question().toLowerCase();
-      if (answer === 'hit') {
-        answer = 'h';
-      } else if (answer === 'stay') {
-        answer = 's';
-      }
-
-      if (answer === 'h' || answer === 's') break;
-      prompt('Sorry, input is invalid. Please enter (h)it or (s)tay');
-    }
-
-    if (answer === 's' || busted(player.value)) break;
-    if (answer === 'h') {
+    if (ANSWER === 's' || busted(player.value)) break;
+    if (ANSWER === 'h') {
       player.cards.push(deck.shift());
       player.value = calculateCardsValue(PLAYERS_CARDS);
       if (busted(player.value)) break;
@@ -190,11 +225,14 @@ function displayGameWinner(score, round) {
   }
 }
 
+function bustedNowWhat() {
+  
+}
+
 function playTwentyOne() {
   // This plays the game
   while (true) {
     let round = 1;
-    const DECK = initializeDeck();
     shuffleDeck(DECK);
     const SCORE = { player: 0, dealer: 0 };
 
@@ -204,6 +242,10 @@ function playTwentyOne() {
       const DEALER = { cards: DECK.splice(3, 2), value: 0 };
       console.clear();
       displayScoreBoard(SCORE, round);
+
+      // What happens with DEALER.cards[0];
+      // DEALER.cards = [[SUIT, VALUE], [SUIT, VALUE]];
+      // DEALER.cards[0] = [SUIT, VALUE] ->
 
       prompt(`Dealer is showing: ${DEALER.cards[0].join(' of ')}`);
       playerTurn(DECK, PLAYER);
