@@ -9,7 +9,7 @@ const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', '
 const WINNING_NUMBER = 21;
 const COMPUTER_STAY_NUMBER = 17;
 const ROUNDS_TO_WIN = 3;
-const initializeDeck = () => {
+function initializeDeck() {
   /**
    * Can each card be created as an object?
    *
@@ -44,7 +44,7 @@ const initializeDeck = () => {
   });
 
   return INIT_DECK;
-};
+}
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
@@ -225,54 +225,40 @@ function displayGameWinner(score, round) {
   }
 }
 
-function bustedNowWhat() {
-  
+function playRound(deck, score, round) {
+  const player = { cards: deck.splice(0, 2), value: 0 };
+  const dealer = { cards: deck.splice(3, 2), value: 0 };
+  console.clear();
+  displayScoreBoard(score, round);
+
+  prompt(`Dealer shows: ${dealer.cards[0].join(' of ')}`);
+  playerTurn(deck, player);
+
+  if (busted(player.value)) {
+    prompt(`Your total is: ${player.value}`);
+    prompt('You busted!');
+  } else {
+    dealersTurn(deck, dealer);
+
+    const winner = calculateResults(player.value, dealer.value);
+    displayResult(winner);
+    updateScore(score, winner);
+  }
+
+  readline.question('Press Enter to continue');
 }
 
 function playTwentyOne() {
-  // This plays the game
   while (true) {
     let round = 1;
     shuffleDeck(DECK);
     const SCORE = { player: 0, dealer: 0 };
 
-    // This plays a round of twenty-one
     while (true) {
-      const PLAYER = { cards: DECK.splice(0, 2), value: 0 };
-      const DEALER = { cards: DECK.splice(3, 2), value: 0 };
-      console.clear();
-      displayScoreBoard(SCORE, round);
+      playRound(DECK, SCORE, round);
 
-      // What happens with DEALER.cards[0];
-      // DEALER.cards = [[SUIT, VALUE], [SUIT, VALUE]];
-      // DEALER.cards[0] = [SUIT, VALUE] ->
-
-      prompt(`Dealer is showing: ${DEALER.cards[0].join(' of ')}`);
-      playerTurn(DECK, PLAYER);
-
-      if (busted(PLAYER.value)) {
-        prompt(`Your total is: ${PLAYER.value}`);
-        prompt('You busted!');
-      } else {
-        prompt(`Your total is: ${PLAYER.value}`);
-        prompt('You chose to stay!');
-
-        dealersTurn(DECK, DEALER);
-
-        if (busted(DEALER.value)) {
-          prompt('Dealer busted');
-        } else {
-          prompt(`The dealer stays at: ${DEALER.value}`);
-        }
-      }
-
-      const WINNER = calculateResults(PLAYER.value, DEALER.value);
-      displayResult(WINNER);
-      updateScore(SCORE, WINNER);
-
-      readline.question('Press enter to continue');
       if (SCORE.player === ROUNDS_TO_WIN || SCORE.dealer === ROUNDS_TO_WIN) break;
-      round += 1;
+      round++;
     }
 
     displayGameWinner(SCORE, round);
