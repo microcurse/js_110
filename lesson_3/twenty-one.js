@@ -45,12 +45,11 @@ function initializeDeck() {
 
   return INIT_DECK;
 }
+const DECK = initializeDeck();
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
-
-const DECK = initializeDeck();
 
 function shuffleDeck(array) {
   const NEW_ARRAY = array;
