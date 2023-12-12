@@ -10,36 +10,10 @@ const WINNING_NUMBER = 21;
 const COMPUTER_STAY_NUMBER = 17;
 const ROUNDS_TO_WIN = 3;
 function initializeDeck() {
-  /**
-   * Can each card be created as an object?
-   *
-   * Explicit requirements:
-   * - INPUT: two arrays (SUITS, VALUES) containing strings
-   * - OUTPUT: an object (CARD) containing a suit and a value
-   *
-   * Implicit requirements:
-   * - N/A
-   *
-   * Examples and test cases:
-   * - SUITS = ['Diamonds', 'Clubs', 'Hearts', 'Spades']
-   * - VALUES = ['2', '3', '4', '5']
-   *
-   * DECK = [ {SUIT: 'Diamonds', VALUE: '2'}, {SUIT: 'Clubs', VALUE: '4'} ]
-   * DECK = {
-   *  card: { suit: 'diamonds', value: '2' }
-   *  card: { suit: 'diamonds', value: '2' } ?
-   * }
-   *
-   * Problem is when creating a card for each SUIT/VALUE pair, the name of each object
-   * within deck (card)needs to be unique.
-   *
-   */
-
   const INIT_DECK = [];
-  // This creates a card using a value and a suit and concatenating them to the same array.
-  VALUES.forEach((value) => {
-    SUITS.forEach((suit) => {
-      INIT_DECK.push([value, suit]);
+  VALUES.forEach((cardVal) => {
+    SUITS.forEach((cardSuit) => {
+      INIT_DECK.push({ suit: cardSuit, value: cardVal });
     });
   });
 
@@ -60,12 +34,14 @@ function shuffleDeck(array) {
 }
 
 function calculateCardsValue(cards) {
-  const CARD_VALUES = cards.map((card) => card[0]);
   let sum = 0;
+  let aceCount = 0;
 
-  CARD_VALUES.forEach((value) => {
+  cards.forEach((card) => {
+    const { value } = card;
     if (value === 'Ace') {
       sum += 11;
+      aceCount += 1;
     } else if (['Jack', 'Queen', 'King'].includes(value)) {
       sum += 10;
     } else {
@@ -73,34 +49,12 @@ function calculateCardsValue(cards) {
     }
   });
 
-  CARD_VALUES.filter((value) => value === 'Ace').forEach(() => {
-    if (sum > 21) sum -= 10;
-  });
+  while (aceCount > 0 && sum > WINNING_NUMBER) {
+    sum -= 10;
+    aceCount -= 1;
+  }
 
   return sum;
-}
-
-function cardToString(cards, delimiter = ' of ', lastDelimiter = 'and') {
-  if (cards.length === 2) {
-    return cards.map((card) => card.join(delimiter)).join(` ${lastDelimiter} `);
-  }
-
-  let result = '';
-  for (let i = 0; i < cards.length; i += 1) {
-    const subArrStr = cards[i].map((item) => item.toString()).join(delimiter);
-
-    if (i === 0) {
-      result += subArrStr;
-    } else if (i === cards.length - 1) {
-      result += `, ${lastDelimiter} ${subArrStr}`;
-    } else if (i === cards.length - 2) {
-      result += `, ${subArrStr}`;
-    } else {
-      result += `, ${subArrStr}`;
-    }
-  }
-
-  return result;
 }
 
 function busted(total) {
@@ -108,8 +62,9 @@ function busted(total) {
 }
 
 function displayGameMessages(player, cards) {
-  prompt(`Your cards: ${cardToString(cards)}`);
-  prompt(`Your total: ${player.value}`);
+  const CARD_MESSAGES = cards.map((card) => `${card.value} of ${card.suit}`).join(', ');
+  prompt(`Your cards: ${CARD_MESSAGES}`);
+  prompt(`Your total: ${player.totalValue}`);
   prompt('(h)it or (s)tay?');
 }
 
@@ -133,31 +88,30 @@ function askPlayerHitOrStay() {
 function playerTurn(deck, player) {
   while (true) {
     const PLAYERS_CARDS = player.cards;
-    player.value = calculateCardsValue(PLAYERS_CARDS);
+    player.totalValue = calculateCardsValue(PLAYERS_CARDS);
     displayGameMessages(player, PLAYERS_CARDS);
     const ANSWER = askPlayerHitOrStay();
 
-    if (ANSWER === 's' || busted(player.value)) break;
+    if (ANSWER === 's' || busted(player.totalValue)) break;
     if (ANSWER === 'h') {
       player.cards.push(deck.shift());
-      player.value = calculateCardsValue(PLAYERS_CARDS);
-      if (busted(player.value)) break;
+      player.totalValue = calculateCardsValue(PLAYERS_CARDS);
+      if (busted(player.totalValue)) break;
     }
   }
 }
 
-function dealersTurn(deck, computersCards) {
+function dealersTurn(deck, dealer) {
   while (true) {
-    computersCards.value = calculateCardsValue(computersCards.cards);
-    prompt(`The dealer has a total of: ${computersCards.value}`);
+    dealer.totalValue = calculateCardsValue(dealer.cards);
+    prompt(`The dealer has a total of: ${dealer.totalValue}`);
 
-    if (computersCards.value >= COMPUTER_STAY_NUMBER || busted(computersCards.value)) break;
+    if (busted(dealer.totalValue)) break;
+    if (dealer.totalValue >= COMPUTER_STAY_NUMBER) break;
 
-    const NEXT_CARD = deck.shift();
-
-    prompt('Dealer hits');
-    computersCards.cards.push(NEXT_CARD);
-    computersCards.value = calculateCardsValue(computersCards.cards);
+    const nextCard = deck.shift();
+    prompt(`Dealer hits: ${nextCard.value} of ${nextCard.suit}`);
+    dealer.cards.push(nextCard);
   }
 }
 
@@ -224,27 +178,51 @@ function displayGameWinner(score, round) {
   }
 }
 
+function handlePlayerBust(playerTotal) {
+  prompt(`Your total is: ${playerTotal}`);
+  prompt('You busted!');
+}
+
+function handlePlayerStay(playerTotal) {
+  prompt(`Your total is: ${playerTotal}`);
+  prompt('You chose to stay!');
+}
+
+function handleDealerResult(dealerTotal) {
+  if (busted(dealerTotal)) {
+    prompt('Dealer busted');
+  } else {
+    prompt(`The dealer stays at: ${dealerTotal}`);
+  }
+}
+
 function playRound(deck, score, round) {
-  const player = { cards: deck.splice(0, 2), value: 0 };
-  const dealer = { cards: deck.splice(3, 2), value: 0 };
+  const player = { cards: [], totalValue: 0 };
+  const dealer = { cards: [], totalValue: 0 };
+
+  // Draw initial cards
+  player.cards.push(...deck.splice(0, 2));
+  dealer.cards.push(...deck.splice(0, 2));
+
   console.clear();
   displayScoreBoard(score, round);
 
-  prompt(`Dealer shows: ${dealer.cards[0].join(' of ')}`);
+  prompt(`Dealer shows: ${dealer.cards[0].value} of ${dealer.cards[0].suit}`);
   playerTurn(deck, player);
 
-  if (busted(player.value)) {
-    prompt(`Your total is: ${player.value}`);
-    prompt('You busted!');
+  if (busted(player.totalValue)) {
+    handlePlayerBust(player.totalValue);
   } else {
+    handlePlayerStay(player.totalValue);
     dealersTurn(deck, dealer);
-
-    const winner = calculateResults(player.value, dealer.value);
-    displayResult(winner);
-    updateScore(score, winner);
+    handleDealerResult(dealer.totalValue);
   }
 
-  readline.question('Press Enter to continue');
+  const winner = calculateResults(player.totalValue, dealer.totalValue);
+  displayResult(winner);
+  updateScore(score, winner);
+
+  readline.question('Press enter to continue');
 }
 
 function playTwentyOne() {
@@ -257,7 +235,7 @@ function playTwentyOne() {
       playRound(DECK, SCORE, round);
 
       if (SCORE.player === ROUNDS_TO_WIN || SCORE.dealer === ROUNDS_TO_WIN) break;
-      round++;
+      round += 1;
     }
 
     displayGameWinner(SCORE, round);
