@@ -84,23 +84,23 @@
  * 
  */
 
-function progressions(arr) {
-  let count = 0;
+function progressions(nums) {
+  return nums
+    .slice(0, nums.length - 2) // stop when there are no next 2 numbers
+    .reduce((count, num, idx) => {
+      nums.slice(idx + 1).forEach(nextNum => { // start iteration from the next index
+        let thirdNum = nextNum + (nextNum - num); // create third number for the progression
+        if (nums.includes(thirdNum)) count += 1;
+      });
 
-  for (let i = 0; i < arr.length; i += 1) {
-    for (let j = arr[i]; j < arr.length; j += 1) {
-      if (arr[j] - arr[j + 1] === arr[j + 1] - arr[j + 2]) {
-        console.log(arr[j], arr[j + 1], arr[j + 2]);
-      }
-    }
-  }
-
-  return count;
+      return count;
+  }, 0);
 }
+
 // Test Cases
 console.log(progressions([1, 2, 3, 5, 7, 9])); // 5
-// console.log(progressions([1, 2, 3, 4, 5]));    // 4
-// console.log(progressions([0, 5, 8, 9, 11, 13, 14, 16, 17, 19])); // 10
+console.log(progressions([1, 2, 3, 4, 5]));    // 4
+console.log(progressions([0, 5, 8, 9, 11, 13, 14, 16, 17, 19])); // 10
 
 
 /*
@@ -116,15 +116,15 @@ Algorithm:
   -return `count`      
 */
 
-function progressions(nums) {
-  return nums
-    .slice(0, nums.length - 2) // stop when there are no next 2 numbers
-    .reduce((count, num, idx) => {
-      nums.slice(idx + 1).forEach(nextNum => { // start iteration from the next index
-        let thirdNum = nextNum + (nextNum - num); // create third number for the progression
-        if (nums.includes(thirdNum)) count += 1;
-      });
+// function progressions(nums) {
+//   return nums
+//     .slice(0, nums.length - 2) // stop when there are no next 2 numbers
+//     .reduce((count, num, idx) => {
+//       nums.slice(idx + 1).forEach(nextNum => { // start iteration from the next index
+//         let thirdNum = nextNum + (nextNum - num); // create third number for the progression
+//         if (nums.includes(thirdNum)) count += 1;
+//       });
 
-      return count;
-  }, 0);
-}
+//       return count;
+//   }, 0);
+// }
