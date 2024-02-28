@@ -28,14 +28,6 @@
  * - A block in an upper layer must be supported by four blocks in a lower layer
  * - A block in a lower layer can support more than one block in an upper layer
  * 
- * Implicit Requirements
- * - The given input number is always positive
- * - Layer number correlates with blocks in a layer
- *  - Layer number x Layer number = number of blocks in a layer
- * 
- * Questions:
- * - 
- * 
  * Visualizing the structure:
  *     ---
  *   --- ---
@@ -45,4 +37,74 @@
  * - Layer 2: 4 blocks (2x2)
  * - Layer 3: 9 blocks (3x3)
  * 
+ * Implicit Requirements
+ * - The given input number is always positive
+ * - Layer number correlates with blocks in a layer
+ *  - Layer number x Layer number = number of blocks in a layer
+ * 
+ * Questions:
+ * - Is there always blocks left over?
+ *  - Answered by test case: no, there isn't always blocks left over if the number of blocks create valid
+ * layers, and ultimately, a valid structure.
+ * - Is the lower layer still valid if it has more blocks than it needs?
+ *  - Answered by 2nd to last test case: The layer is only valid if it has the proper amount of blocks 
+ * needed.
+ * 
+ * Examples and Test Cases
+ * 
+ * console.log(calculateLeftoverBlocks(0) === 0); //true
+ * console.log(calculateLeftoverBlocks(1) === 0); //true
+ * console.log(calculateLeftoverBlocks(2) === 1); //true
+ * console.log(calculateLeftoverBlocks(4) === 3); //true
+ * console.log(calculateLeftoverBlocks(5) === 0); //true
+ * console.log(calculateLeftoverBlocks(6) === 1); //true
+ * console.log(calculateLeftoverBlocks(14) === 0); //true
+ * 
+ * Data Structures
+ * Layer 1: Check if the given number is >= layerNumber**. If it is, subtract layerNumber**
+ * Layer 2: Check if the leftover is >= layerNumber**. If it is, subtract layerNumber**
+ * Layer 3: Check if the leftover is >= layerNumber**. If it is, subtract layerNumber**
+ * 
+ * - From this logic, we need a loop that increments the layer number after each iteration.
+ * - That way, we can get the next layer's square to determine how many blocks are needed to support the top 
+ * layer.
+ * - If we don't have enough blocks to build another bottom layer, the rest of those blocks get returned as the "left over blocks".
+ * 
+ * The data structure is simply a number.
+ * 
+ * Algorithm
+ * 1. Create a "blocks remaining" and set it equal to given number of blocks
+ * 2. Create a variable layerNumber = 1
+ * 3. Create a variable "blocks required" = layerNumber**2
+ * 4. Check if given number "blocks remaining" is >= "blocks required"".
+ * 5. If it is, subtract "blocks required" from "blocks remaining"
+ * 6. Incremement layerNumber by 1 to work on the next layer.
+ * 7. Repeat step 3-6 until "blocks remaining" is < "blocks required".
+ * 8. Return "blocks remianing".
+ * 
  */
+
+function calculateLeftoverBlocks(blocks) {
+  let blocksRemaining = blocks;
+  let layerNumber = 1;
+  
+  while (true) {
+    let blocksRequired = layerNumber**2;
+    if (blocksRemaining >= blocksRequired) {
+      blocksRemaining = blocksRemaining - blocksRequired ;
+      layerNumber += 1;
+    } else {
+      break;
+    }
+  }
+
+  return blocksRemaining;
+}
+
+console.log(calculateLeftoverBlocks(0) === 0); //true
+console.log(calculateLeftoverBlocks(1) === 0); //true
+console.log(calculateLeftoverBlocks(2) === 1); //true
+console.log(calculateLeftoverBlocks(4) === 3); //true
+console.log(calculateLeftoverBlocks(5) === 0); //true
+console.log(calculateLeftoverBlocks(6) === 1); //true
+console.log(calculateLeftoverBlocks(14) === 0); //true

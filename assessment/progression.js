@@ -104,7 +104,7 @@ console.log(progressions([0, 5, 8, 9, 11, 13, 14, 16, 17, 19])); // 10
 
 
 /*
-Algorithm:  
+Algorithm:
 -declare `count` variable to store the number of progressions found
   -for each number in input array called `currentNum`
     -iterate over the subsequent numbers in the array
