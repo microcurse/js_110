@@ -36,8 +36,8 @@
  * - Numbers
  * 
  * Algorithm
- * - If n is 1, return 1
- * - If n is 2, return 1
+ * - If n is less than or equal to 2, return 1
+ *  - This way we can set an exit condition of the first 2 numbers as 1 and 1
  * - Otherwise, return fibonacci(n - 1) + fibonacci(n - 2)
  * 
  */
