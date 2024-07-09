@@ -37,7 +37,8 @@
  * - If it does, restart the loop
  * - If it doesn't, exit the loop
  * - Return the mutated array
- *  
+ * 
+ * Solved in: 28~ mins
  */
 
 function bubbleSort(array) {
