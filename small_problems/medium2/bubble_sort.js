@@ -41,28 +41,48 @@
  * Solved in: 28~ mins
  */
 
-function bubbleSort(array) {
-  let trackingArray = [];
+// function bubbleSort(array) {
+//   let trackingArray = [];
 
-  for (let idx = 0; idx <= array.length; idx += 1) {
+//   for (let idx = 0; idx <= array.length; idx += 1) {
 
-    if (array[idx - 1] > array[idx]) {
-      [array[idx - 1], array[idx]] = [array[idx], array[idx - 1]];
-      trackingArray.push('yes');
-    } else {
-      trackingArray.push('no');
+//     if (array[idx - 1] > array[idx]) {
+//       [array[idx - 1], array[idx]] = [array[idx], array[idx - 1]];
+//       trackingArray.push('yes');
+//     } else {
+//       trackingArray.push('no');
+//     }
+
+//     // Check if there was a complete pass without any swaps
+//     if (trackingArray.includes('yes')) {
+//       idx = 0;
+//       trackingArray = [];
+//     };
+//   }
+
+//   return array;
+// }
+
+/**
+ * Solving with recursion
+ * 
+ * Solved in: 52min
+ * 
+ */
+
+function bubbleSort(arr, i = 0) {
+  // Set a base case
+  // What is the base case?
+  // The base case is getting to the end of the iteration without swapping elements
+  if (i === arr.length) return arr;
+
+  for( let j = i + 1; j < arr.length; j += 1 ) {
+    if (arr[i] > arr[j]) {
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-
-    // Check if there was a complete pass without any swaps
-    if (trackingArray.includes('yes')) {
-      idx = 0;
-      trackingArray = [];
-    };
   }
-
-  return array;
+  return bubbleSort(arr, i + 1);
 }
-
 
 let array1 = [5, 3];
 bubbleSort(array1);
